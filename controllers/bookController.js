@@ -1,33 +1,57 @@
-const Book = require("../models/Book");
-
-exports.createBook = async (req, res) => {
+const Book = require("../models/bookModel");
+exports.getBooks = async (req, res) => {
   try {
-    const book = await Book.create(req.body);
-    res.status(201).json(book);
+    const books = await Book.find();
+    res.status(201).json({
+      status: "success",
+      data: {
+        books,
+      },
+    });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.send(err.message);
   }
 };
 
-exports.getBooks = async (req, res) => {
-  const books = await Book.find();
-  res.json(books);
-};
-
 exports.getBook = async (req, res) => {
-  const book = await Book.findById(req.params.id);
-  if (!book) return res.status(404).json({ error: "Book not found" });
-  res.json(book);
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ error: "Book not found" });
+    res.status(201).json({
+      status: "success",
+      data: {
+        book,
+      },
+    });
+  } catch (err) {
+    res.send(err.message);
+  }
 };
 
 exports.updateBook = async (req, res) => {
-  const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-  res.json(book);
+  try {
+    const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
+    res.status(201).json({
+      status: "success",
+      data: {
+        book,
+      },
+    });
+  } catch (err) {
+    res.send(err.message);
+  }
 };
 
 exports.deleteBook = async (req, res) => {
-  await Book.findByIdAndDelete(req.params.id);
-  res.status(204).send();
+  try {
+    const book = await Book.findByIdAndDelete(req.params.id);
+    res.status(204).json({
+      status: "success",
+      data: null,
+    });
+  } catch (err) {
+    res.send(err.message);
+  }
 };
